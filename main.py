@@ -1,5 +1,14 @@
 import subprocess
 import re
+from pymongo import MongoClient
+import crudFunc
+
+# Replace 'localhost' with the actual hostname or IP address of your MongoDB server.
+# If your MongoDB server is running on the default port (27017), you don't need to specify it.
+client = MongoClient('localhost', 27017)
+
+# Replace 'your_database_name' with the name of your existing database.
+db = client['DBPimi']
 
 # Define the command to run
 command = ["speedtest-cli", "--secure"]
@@ -23,3 +32,6 @@ upload_speed = upload_speed_line[0].split('Upload: ')[1].strip()
 
 print("Download Speed:", download_speed)
 print("Upload Speed:", upload_speed)
+
+crudFunc.addReading(download_speed, upload_speed)
+
