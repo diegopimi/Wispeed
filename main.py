@@ -8,12 +8,18 @@ command = ["speedtest-cli", "--secure"]
 result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
 # Print the command output
-print("Command Output:")
-print(result.stdout)
+print("=======Performing WIFI Test=======")
 
-# Use a regular expression to find all numbers in the output
-numbers = re.findall(r'\b\d+\b', result.stdout)
+# print(result.stdout)
+result = result.stdout
 
-# Print the numbers
-print("Numbers found in the output:")
-print(numbers)
+lines = result.split('\n')
+
+download_speed_line = [line for line in lines if 'Download:' in line]
+upload_speed_line = [line for line in lines if 'Upload:' in line]
+
+download_speed = download_speed_line[0].split('Download: ')[1].strip()
+upload_speed = upload_speed_line[0].split('Upload: ')[1].strip()
+
+print("Download Speed:", download_speed)
+print("Upload Speed:", upload_speed)
