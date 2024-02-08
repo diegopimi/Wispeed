@@ -5,14 +5,12 @@ Ideally the app should **return results in a graphical manner** and should have 
 **THIS PROJECT HAS A LONG WAY TO GO**
 
 
-SETUP: 
+**----------- SETUP -----------** 
 Install MongoDB -> Create "DBPimi" database -> add "WiSpeed" Collection
 
-Run this command in CMD:
-
-pip install speedtest-cli
-
-pip install flask-pymongo
+Run these commands in CMD:
+  -  pip install speedtest-cli
+  -  pip install flask-pymongo
 
 
 **REQUIREMENTS / TO-DO LIST** (Not in order):
