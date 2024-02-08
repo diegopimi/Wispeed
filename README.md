@@ -6,6 +6,7 @@ Ideally the app should **return results in a graphical manner** and should have 
 
 
 **----------- SETUP -----------** 
+
 Install MongoDB -> Create "DBPimi" database -> add "WiSpeed" Collection
 
 Run these commands in CMD:
