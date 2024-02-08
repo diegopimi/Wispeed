@@ -11,6 +11,7 @@ Install MongoDB -> Create "DBPimi" database -> add "WiSpeed" Collection
 Run this command in CMD:
 
 pip install speedtest-cli
+
 pip install flask-pymongo
 
 
