@@ -13,6 +13,8 @@ Run these commands in CMD:
   -  pip install speedtest-cli
   -  pip install flask-pymongo
 
+Clone repository
+
 **----------- HOW TO RUN -----------**
 
 On the terminal "python app.py"
