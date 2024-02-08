@@ -2,7 +2,7 @@ The intention of this project is to create an **app that is capable of reading a
 
 Ideally the app should **return results in a graphical manner** and should have a **nice user interface**. 
 
-**This project has a long way to go. **
+**THIS PROJECT HAS A LONG WAY TO GO**
 
 
 SETUP: 
@@ -20,3 +20,4 @@ pip install speedtest-cli
 - The app shall keep count of number of readings and reading ID.
 - Results shall be presented graphically after every reading, alongside a progress bar or indication of readings left.
 - The app shall count with a professional looking user-interface.
+- Evaluate efficiency and accuracy of test.
