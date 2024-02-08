@@ -1,5 +1,6 @@
 import subprocess
 import re
+import datetime
 from pymongo import MongoClient
 import crudFunc
 
@@ -32,6 +33,9 @@ upload_speed = upload_speed_line[0].split('Upload: ')[1].strip()
 
 print("Download Speed:", download_speed)
 print("Upload Speed:", upload_speed)
-
-crudFunc.addReading(download_speed, upload_speed)
+date_r = datetime.date.today()
+date_r = date_r.strftime("%Y-%m-%d")
+time_r = datetime.datetime.now()
+time_r = time_r.strftime("%H:%M:%S")
+crudFunc.addReading(download_speed, upload_speed, date_r, time_r)
 

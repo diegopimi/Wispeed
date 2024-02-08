@@ -1,4 +1,5 @@
 import subprocess
+import datetime
 import re
 from pymongo import MongoClient
 client = MongoClient('localhost', 27017)
@@ -9,10 +10,12 @@ db = client['DBPimi']
 wispeed_collection = db['WiSpeed']
 
 
-def addReading(download, upload):
+def addReading(download, upload, date_r, time_r):
     wifi_data = {
         'Download': download,
-        'Upload': upload
+        'Upload': upload,
+        'Date': date_r,
+        'Time': time_r
     }
     result = wispeed_collection.insert_one(wifi_data)
     return True
