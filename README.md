@@ -29,3 +29,4 @@ On the terminal "python app.py"
 - Results shall be presented graphically after every reading, alongside a progress bar or indication of readings left.
 - The app shall count with a professional looking user-interface and animations. (Website and app deployment?) 
 - Evaluate efficiency and accuracy of test.
+- Input validation, no room for crashing.
