@@ -27,5 +27,5 @@ On the terminal "python app.py"
 - The user shall be able to specify the time and date in which readings occur. For example February 20th at 5:00 PM and 9:59 PM.
 - The app shall keep count of number of readings and reading ID.
 - Results shall be presented graphically after every reading, alongside a progress bar or indication of readings left.
-- The app shall count with a professional looking user-interface.
+- The app shall count with a professional looking user-interface and animations. (Website and app deployment?) 
 - Evaluate efficiency and accuracy of test.
