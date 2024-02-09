@@ -5,7 +5,7 @@ Ideally the app should **return results in a graphical manner** and should have 
 **THIS PROJECT HAS A LONG WAY TO GO**
 
 
-**----------- SETUP -----------** 
+**-----------    SETUP   -----------** 
 
 Install MongoDB -> Create "DBPimi" database -> add "WiSpeed" Collection
 (make sure to also have MongoDB Compass)
