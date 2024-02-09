@@ -17,6 +17,8 @@ Run these commands in CMD:
 
 Clone repository
 
+Brooksy❤️, create a branch from 'main' branch so you can start implementing requirements. Feel free to add any requirements/features you would like to see. 
+
 **----------- HOW TO RUN -----------**
 
 1. Open cmd and type 'mongod' to start an instance of MongoDB
