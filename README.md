@@ -36,3 +36,5 @@ Clone repository
 - The app shall count with a professional looking user-interface and animations. (Website and app deployment?) 
 - Evaluate efficiency and accuracy of test.
 - Input validation, no room for crashing.
+- Follow consistent coding standards.
+- Create UML and following documentation and proper design. 
