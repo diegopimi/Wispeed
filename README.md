@@ -39,4 +39,5 @@ Brooksy❤️, create a branch from 'main' branch so you can start implementing 
 - Evaluate efficiency and accuracy of test.
 - Input validation, no room for crashing.
 - Follow consistent coding standards.
-- Create UML and following documentation and proper design. 
+- Create UML and following documentation and proper design.
+- Comment functionality of the code.
