@@ -14,6 +14,7 @@ Run these commands in CMD:
   -  pip install speedtest-cli
   -  pip install flask-pymongo
   -  have the following folder structure C:\Program Files\MongoDB\data\db (db should be an empty folder)
+  -  install PlantUML extension from vscode
 
 Clone repository
 
