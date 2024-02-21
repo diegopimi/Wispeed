@@ -11,6 +11,7 @@ Install MongoDB -> Create "DBPimi" database -> add "WiSpeed" Collection
 (make sure to also have MongoDB Compass)
 
 Run these commands in CMD:
+  -  install pip
   -  pip install speedtest-cli
   -  pip install flask-pymongo
   -  have the following folder structure C:\Program Files\MongoDB\data\db (db should be an empty folder)
