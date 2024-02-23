@@ -1,0 +1,9 @@
+@startuml WiSpeed
+autonumber
+skinparam Style strictuml
+database WiSpeed_DB
+Client -> Service: Request readings
+Service -> Service: Perform command
+Service -> WiSpeed_DB: Store readings in database
+WiSpeed_DB -> Client: Display readings in website
+@enduml
