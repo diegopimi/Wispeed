@@ -16,6 +16,7 @@ Run these commands in CMD:
   -  pip install flask-pymongo
   -  have the following folder structure C:\Program Files\MongoDB\data\db (db should be an empty folder)
   -  install PlantUML extension from vscode
+  -  Install Graphviz
 
 Clone repository
 
@@ -27,8 +28,12 @@ Brooksy❤️, create a branch from 'main' branch so you can start implementing 
 2. Open MongoDB Compass and connect to uri 'mongodb://localhost:27017/'
 3. Open the code project in VSCode and in the terminal type 'python app.py'
 4. In a browser, go to 'http://127.0.0.1:5000/'
-5. Click the button to read wifi speeds. It takes a bit for the readings to occur, reload the page after a couple minutes and you should see the table being populated. 
+5. Click the button to read wifi speeds. It takes a bit for the readings to occur, reload the page after a couple minutes and you should see the table being populated.
 
+   What happens if I cant connect to the database?
+   
+   Search in taskbar for "Services", look for mongodb and end service. End it in Task Manager as well. Repead steps 1 and 2. If that does not work, restart computer.
+   
 **----------------------------------**
 
 **REQUIREMENTS / TO-DO LIST** (Not in order):
