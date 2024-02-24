@@ -2,11 +2,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WiSpeed</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <title>WiSpeed</title> 
 </head>
 <body>
-    <h1>WiSpeed Readings</h1>
-    <table border="1">
+    <h1 class="headers">WiSpeed Readings</h1>
+    <table>
         <thead>
             <tr>
                 <th>Download</th>
@@ -26,9 +27,13 @@
             {% endfor %}
         </tbody>
     </table>
-    <h2>Run Main Script</h2>
+    <h2 class="subheaders">Obtain Reading Now</h2>
     <form action="{{ url_for('run_main') }}" method="post">
-        <button type="submit">Run Main Script</button>
+        <button type="submit" class="button">Run Main Script</button>
+    </form>
+    <h2 class="subheaders">Obtain Reading Periodically</h2>
+    <form action="{{ url_for('run_periodical') }}" method="post">
+        <button type="submit" class="button">Run Periodically</button>
     </form>
 </body>
 </html>

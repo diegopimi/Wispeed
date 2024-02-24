@@ -20,5 +20,14 @@ def run_main():
         print("Error running main.py:", e)
     return redirect(url_for('index'))
 
+@app.route('/run_periodical', methods=['POST'])
+def run_periodical():
+    try:
+        from functionalities import periodic_reading
+        periodic_reading(2, 4)  # Call the periodic_reading function directly
+    except subprocess.CalledProcessError as e:
+        print("Error running periodic_reading.py:", e)
+    return redirect(url_for('index'))
+
 if __name__ == '__main__':
     app.run(debug=True)
