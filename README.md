@@ -18,9 +18,7 @@ Run these commands in CMD:
   -  install PlantUML extension from vscode
   -  Install Graphviz
 
-Clone repository
-
-Brooksy❤️, create a branch from 'main' branch so you can start implementing requirements. Feel free to add any requirements/features you would like to see. 
+Clone repository 
 
 **----------- HOW TO RUN -----------**
 
@@ -51,3 +49,9 @@ Brooksy❤️, create a branch from 'main' branch so you can start implementing 
 - Users will have the ability to create client accounts / Admin accounts.
 - Different layouts (options, website) shall be shown according to user type (client/admin).
 - CRUD will be available (preferrably only to admin).
+
+**-------- TIPS AND TRICKS --------**
+
+1. Modifying UML / Sequence diagram.
+- to see a live preview, right click @startuml and select view preview
+- to export svg (viewable image shown in github), right click @startuml and export as svg
