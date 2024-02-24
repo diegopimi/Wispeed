@@ -48,3 +48,6 @@ Brooksy❤️, create a branch from 'main' branch so you can start implementing 
 - Follow consistent coding standards.
 - Create UML and following documentation and proper design.
 - Comment functionality of the code.
+- Users will have the ability to create client accounts / Admin accounts.
+- Different layouts (options, website) shall be shown according to user type (client/admin).
+- CRUD will be available (preferrably only to admin).
