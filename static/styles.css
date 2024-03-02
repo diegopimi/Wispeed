@@ -75,7 +75,34 @@ button {
     transition: background-color 0.3s ease; /* Smooth transition effect */
 }
 
+/* Add styles for the form container */
+.form-container {
+    text-align: center; /* Center align the content */
+    margin-top: 20px; /* Add some top margin */
+}
+
+/* Add styles for form inputs and labels */
+.form-container label, .form-container input {
+    display: block; /* Display inputs and labels as block elements */
+    margin: 0 auto; /* Center the elements horizontally */
+    width: 50%; /* Set width to control the size */
+    margin-bottom: 10px; /* Add some bottom margin for spacing */
+}
+
+/* Style for the button */
+.button {
+    display: block; /* Make button a block element */
+    margin: 0 auto; /* Center the button horizontally */
+    background-color: #007bff; /* Blue background color */
+    color: white; /* White text color */
+    padding: 10px 20px; /* Add padding */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Add border radius */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
 /* Button hover effect */
-button:hover {
+.button:hover {
     background-color: #0056b3; /* Darker blue on hover */
 }
