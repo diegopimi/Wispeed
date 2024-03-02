@@ -8,6 +8,7 @@ import time
 # Global variables
 global_cmd = "speedtest-cli"
 global_optn = "--secure"
+seconds_to_minutes = 60
 # ---------------
 def repeat_function(func, interval):
     count = 0
@@ -46,9 +47,8 @@ def main_func():
     crudFunc.addReading(download_speed, upload_speed, date_r, time_r)
 
 def periodic_reading(frequency, max):
-    # Frequency shall be read in minutes or hours.
     counter = 0
     while counter < max:
-        main_func()  # Call the main_func function
-        time.sleep(frequency)  # Convert frequency to minutes
-        counter += 1
+        main_func()                               # Call the main_func function
+        time.sleep(frequency*seconds_to_minutes)  # Convert frequency to minutes
+        counter += 1   
