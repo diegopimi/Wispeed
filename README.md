@@ -35,7 +35,7 @@ Clone repository
 
 Running testing:
 
-Inside the test directory; pytest test_app.py > <name of file to store results>.txt
+Inside the test directory; pytest test_app.py > [name of file to store results].txt
    
 **----------------------------------**
 
