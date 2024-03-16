@@ -27,6 +27,11 @@
             {% endfor %}
         </tbody>
     </table>
+    <h2 class="subheaders">Show all readings!</h2>
+    <br> 
+    <form action="{{ url_for('return_all') }}" method="post">
+        <button type="submit" class="button">See all readings!</button>
+    </form>
     <h2 class="subheaders">Obtain Reading Now</h2>
     <br> 
     <form action="{{ url_for('run_main') }}" method="post">
