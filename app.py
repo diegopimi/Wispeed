@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, url_for
 from flask_pymongo import PyMongo
 import subprocess
-from functionalities import periodic_reading
+from functionalities import periodic_reading, returnReading
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/DBPimi'
@@ -28,6 +28,16 @@ def run_periodical():
         periodic_reading(frequency, max_occurrences)          # Call the periodic_reading function with the values
     except subprocess.CalledProcessError as e:
         print("Error running periodic_reading.py:", e)
+    return redirect(url_for('index'))
+
+@app.route('/return_dated', methods=['POST'])
+def return_dated():
+    try:    
+        date = str(request.form['date'])          # Get date from the form
+        readings=returnReading(date)          # Call the periodic_reading function with the values
+        return render_template('index.html', data=readings)
+    except subprocess.CalledProcessError as e:
+        print("Error running request:", e)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

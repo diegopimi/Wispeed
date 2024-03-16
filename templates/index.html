@@ -28,6 +28,7 @@
         </tbody>
     </table>
     <h2 class="subheaders">Obtain Reading Now</h2>
+    <br> 
     <form action="{{ url_for('run_main') }}" method="post">
         <button type="submit" class="button">Run Main Script</button>
     </form>
@@ -45,5 +46,15 @@
             <button type="submit" class="button">Run Periodically</button>
         </form>
     </div>
+    <div class="form-container">
+        <form action="{{ url_for('return_dated') }}" method="post">
+            <div>
+                <label for="date">Date (MM-DD-YYYY):</label>
+                <input type="text" id="date" name="date">
+                <button type="submit" class="button">Return readings</button>
+            </div>
+        </form>
+    <br> 
+
 </body>
 </html>
