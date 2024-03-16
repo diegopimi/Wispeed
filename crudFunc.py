@@ -19,3 +19,10 @@ def addReading(download, upload, date_r, time_r):
     }
     result = wispeed_collection.insert_one(wifi_data)
     return True
+
+def returnReading(date_r):
+    wifi_data = {
+        'Date': date_r
+    }
+    result = wispeed_collection.find(wifi_data)
+    return result

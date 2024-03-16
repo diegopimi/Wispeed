@@ -52,3 +52,7 @@ def periodic_reading(frequency, max):
         main_func()                               # Call the main_func function
         time.sleep(frequency*seconds_to_minutes)  # Convert frequency to minutes
         counter += 1   
+
+def returnReading(date):
+    return crudFunc.returnReading(date)
+    
