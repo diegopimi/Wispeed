@@ -55,4 +55,7 @@ def periodic_reading(frequency, max):
 
 def returnReading(date):
     return crudFunc.returnReading(date)
+
+def returnAll():
+    return crudFunc.returnAll()
     

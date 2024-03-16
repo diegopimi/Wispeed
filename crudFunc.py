@@ -26,3 +26,7 @@ def returnReading(date_r):
     }
     result = wispeed_collection.find(wifi_data)
     return result
+
+def returnAll():
+    result = wispeed_collection.find()
+    return result
