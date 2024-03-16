@@ -17,6 +17,7 @@ Run these commands in CMD:
   -  have the following folder structure C:\Program Files\MongoDB\data\db (db should be an empty folder)
   -  install PlantUML extension from vscode
   -  Install Graphviz
+  -  pip install pytest
 
 Clone repository 
 
@@ -31,6 +32,10 @@ Clone repository
    What happens if I cant connect to the database?
    
    Search in taskbar for "Services", look for mongodb and end service. End it in Task Manager as well. Repead steps 1 and 2. If that does not work, restart computer.
+
+Running testing:
+
+Inside the test directory; pytest test_app.py > <name of file to store results>.txt
    
 **----------------------------------**
 
