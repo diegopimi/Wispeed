@@ -5,11 +5,13 @@ from pymongo import MongoClient
 import crudFunc
 import threading
 import time
+
 # Global variables
 global_cmd = "speedtest-cli"
 global_optn = "--secure"
 seconds_to_minutes = 60
 # ---------------
+
 def repeat_function(func, interval):
     count = 0
     while (count<interval):
@@ -18,7 +20,7 @@ def repeat_function(func, interval):
         count=count+1
 
 def main_func():
-# Define the command to run
+    # Define the command to run
     command = [global_cmd, global_optn]
 
     # Run the command and capture the output
