@@ -1,8 +1,11 @@
 from flask import Flask, render_template, redirect, request, url_for
 from flask_pymongo import PyMongo
 import subprocess
-from functionalities import periodic_reading, returnReading, returnAll
-
+import sched
+import time
+from datetime import datetime
+from functionalities import periodic_reading, returnReading, returnAll, readingAt, scheduler
+scheduler = sched.scheduler(time.time, time.sleep)
 app = Flask(__name__)
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/DBPimi'
 mongo = PyMongo(app)
@@ -34,7 +37,7 @@ def run_periodical():
 def return_dated():
     try:    
         date = str(request.form['date'])          # Get date from the form
-        readings=returnReading(date)          # Call the periodic_reading function with the values
+        readings=returnReading(date)              # Call the periodic_reading function with the values
         return render_template('index.html', data=readings)
     except subprocess.CalledProcessError as e:
         print("Error running request:", e)
@@ -45,6 +48,15 @@ def return_all():
     try:    
         readings=returnAll()          # Call the periodic_reading function with the values
         return render_template('index.html', data=readings)
+    except subprocess.CalledProcessError as e:
+        print("Error running request:", e)
+    return redirect(url_for('index'))
+
+@app.route('/run_dated', methods=['POST'])
+def run_dated():
+    try:    
+        time_str = str(request.form['time'])
+        readingAt(time_str)          # Call the periodic_reading function with the values
     except subprocess.CalledProcessError as e:
         print("Error running request:", e)
     return redirect(url_for('index'))

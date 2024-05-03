@@ -52,6 +52,16 @@
             <button type="submit" class="button">Run Periodically</button>
         </form>
     </div>
+    <h2 class="subheaders">Schedule a Reading</h2>
+    <div class="form-container">
+        <form action="{{ url_for('run_dated') }}" method="post">
+            <div>
+                <label for="time"  class="label">Run at specific time (HH:MM:SS):</label>
+                <input type="text" id="time" name="time">
+                <button type="submit" class="button">Schedule</button>
+            </div>
+        </form>
+    </div>
     <div class="form-container">
         <form action="{{ url_for('return_dated') }}" method="post">
             <div>
@@ -60,6 +70,7 @@
                 <button type="submit" class="button">Return readings</button>
             </div>
         </form>
+    </div>
     <br> 
 
 </body>
