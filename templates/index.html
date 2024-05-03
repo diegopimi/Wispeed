@@ -43,11 +43,11 @@
         <form action="{{ url_for('run_periodical') }}" method="post">
             <div>
                 <label for="frequency" class="label">Frequency (in minutes):</label>
-                <input type="text" id="frequency" name="frequency">
+                <input type="text" class="textbox" id="frequency" name="frequency">
             </div>
             <div>
                 <label for="occurrences"  class="label">Occurrences:</label>
-                <input type="text" id="occurrences" name="occurrences">
+                <input type="text" class="textbox" id="occurrences" name="occurrences">
             </div>
             <button type="submit" class="button">Run Periodically</button>
         </form>
@@ -57,7 +57,7 @@
         <form action="{{ url_for('run_dated') }}" method="post">
             <div>
                 <label for="time"  class="label">Run at specific time (HH:MM:SS):</label>
-                <input type="text" id="time" name="time">
+                <input type="text" class="textbox" id="time" name="time">
                 <button type="submit" class="button">Schedule</button>
             </div>
         </form>
@@ -66,7 +66,7 @@
         <form action="{{ url_for('return_dated') }}" method="post">
             <div>
                 <label for="date"  class="label">Date (MM-DD-YYYY):</label>
-                <input type="text" id="date" name="date">
+                <input type="text" class="textbox" id="date" name="date">
                 <button type="submit" class="button">Return readings</button>
             </div>
         </form>
