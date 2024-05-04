@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Install dependencies
-RUN pip install Flask Flask-PyMongo pymongo
+RUN pip install Flask Flask-PyMongo pymongo plantuml
 
 # Install PlantUML
 RUN apt-get update && apt-get install -y \
@@ -16,11 +16,14 @@ RUN apt-get update && apt-get install -y \
     default-jdk \
     graphviz \
     && rm -rf /var/lib/apt/lists/*
-
-RUN pip install plantuml
+# Install MongoDB
+RUN apt-get update && apt-get install -y mongodb
+# Create directory for MongoDB data
+RUN mkdir -p /data/db
 
 # Expose port 5000 to the outside world
+EXPOSE 27017
 EXPOSE 5000
-
+CMD ["mongod"]
 # Command to run the application
 CMD ["python", "app.py"]
