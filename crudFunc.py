@@ -2,7 +2,7 @@ import subprocess
 import datetime
 import re
 from pymongo import MongoClient
-client = MongoClient('localhost', 27017)
+client = MongoClient('mongodb', 27017)
 
 # Replace 'your_database_name' with the name of your database
 db = client['DBPimi']

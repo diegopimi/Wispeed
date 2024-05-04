@@ -7,7 +7,7 @@ from datetime import datetime
 from functionalities import periodic_reading, returnReading, returnAll, readingAt, scheduler
 scheduler = sched.scheduler(time.time, time.sleep)
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/DBPimi'
+app.config['MONGO_URI'] = 'mongodb://mongodb:27017/DBPimi'
 mongo = PyMongo(app)
 
 @app.route('/')
