@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
   <title>WiSpeed Graph</title> 
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+<div class="background-imageV2"></div>
 <body>
-  <h1>Wispeed Graph</h1>
+  <h1 class="headers">Wispeed Graph</h1>
   <div id="graph-container">
     <script>
         var plot = '{{ plot_html | safe }}';
