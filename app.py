@@ -5,6 +5,9 @@ import sched
 import time
 from datetime import datetime
 from functionalities import periodic_reading, returnReading, returnAll, readingAt, scheduler
+import plotly.graph_objs as go
+import plotly.io as pio
+
 scheduler = sched.scheduler(time.time, time.sleep)
 app = Flask(__name__)
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/DBPimi'
@@ -60,6 +63,27 @@ def run_dated():
     except subprocess.CalledProcessError as e:
         print("Error running request:", e)
     return redirect(url_for('index'))
+
+@app.route('/to_graph_index', methods=['GET'])
+def to_graph_index():
+    # Query MongoDB to get the data
+    cursor = mongo.db.WiSpeed.find({}, {'_id': 0, 'Download': 1, 'Upload': 1})
+
+    # Extract x and y values from the query result
+    x_values = []
+    y_values = []
+    for document in cursor:
+        x_values.append(document['Download'])
+        y_values.append(document['Upload'])
+
+    # Create a Plotly line plot
+    fig = go.Figure(data=go.Scatter(x=x_values, y=y_values))
+
+    # Convert the Plotly figure to HTML
+    html_output = fig.to_html(full_html=False)
+    
+    # pio.show(fig, renderer='browser')
+    return render_template('graph_index.html', static_folder='static', plot_html=html_output)
 
 
 if __name__ == '__main__':
