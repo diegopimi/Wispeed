@@ -32,22 +32,23 @@ def main_func():
         # Print the command output
         print("=======Performing WIFI Test=======")
 
-        # print(result.stdout)
-        result = result.stdout
+        # Extract numerical values only
+        download_speed_match = re.search(r'Download: ([\d.]+)', result.stdout)
+        upload_speed_match = re.search(r'Upload: ([\d.]+)', result.stdout)
 
-        lines = result.split('\n')
+        # Check if matches are found
+        if download_speed_match and upload_speed_match:
+            download_speed = download_speed_match.group(1)
+            upload_speed = upload_speed_match.group(1)
 
-        # parse command output
-        download_speed_line = [line for line in lines if 'Download:' in line]
-        upload_speed_line = [line for line in lines if 'Upload:' in line]
-        download_speed = download_speed_line[0].split('Download: ')[1].strip()
-        upload_speed = upload_speed_line[0].split('Upload: ')[1].strip()
+            print("Download Speed (Mbit/s):", download_speed)
+            print("Upload Speed (Mbit/s):", upload_speed)
 
-        print("Download Speed:", download_speed)
-        print("Upload Speed:", upload_speed)
-        date_r = datetime.now().strftime("%Y-%m-%d")
-        time_r = datetime.now().strftime("%H:%M:%S")
-        crudFunc.addReading(download_speed, upload_speed, date_r, time_r)
+            date_r = datetime.now().strftime("%Y-%m-%d")
+            time_r = datetime.now().strftime("%H:%M:%S")
+            crudFunc.addReading(download_speed, upload_speed, date_r, time_r)
+        else:
+            print("Error: Unable to extract speed values from command output")
     except Exception as e:
         print("Error running main_func:", e)
 
