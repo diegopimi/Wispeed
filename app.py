@@ -66,14 +66,14 @@ def run_dated():
 
 @app.route('/to_graph_index', methods=['GET'])
 def to_graph_index():
-    # Query MongoDB to get the data
-    cursor = mongo.db.WiSpeed.find({}, {'_id': 0, 'Download': 1, 'Upload': 1})
-
+    # Query MongoDB to get the data, ascending order
+    cursor = mongo.db.WiSpeed.find({}, {'_id': 0, 'Time': 1, 'Upload': 1}).sort('Upload', 1)
+    
     # Extract x and y values from the query result
     x_values = []
     y_values = []
     for document in cursor:
-        x_values.append(document['Download'])
+        x_values.append(document['Time'])
         y_values.append(document['Upload'])
 
     # Create a Plotly line plot
