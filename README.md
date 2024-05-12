@@ -18,6 +18,7 @@ Run these commands in CMD:
   -  install PlantUML extension from vscode
   -  Install Graphviz
   -  pip install pytest
+  -  pip install plotly
 
 Clone repository 
 
