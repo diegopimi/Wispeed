@@ -66,25 +66,89 @@ def run_dated():
 
 @app.route('/to_graph_index', methods=['GET'])
 def to_graph_index():
-    # Query MongoDB to get the data, ascending order
-    cursor = mongo.db.WiSpeed.find({}, {'_id': 0, 'Time': 1, 'Upload': 1}).sort('Upload', 1)
+    # Query MongoDB to get the data, sorted by ascending time values
+    cursor = mongo.db.WiSpeed.find({}, {'_id': 0, 'Time': 1, 'Upload': 1}).sort('Time', 1)
     
     # Extract x and y values from the query result
     x_values = []
     y_values = []
     for document in cursor:
-        x_values.append(document['Time'])
+        # Convert the time string to a datetime object
+        time_str = document['Time']
+        time_obj = datetime.strptime(time_str, '%H:%M:%S')
+
+        x_values.append(time_obj)
         y_values.append(document['Upload'])
 
-    # Create a Plotly line plot
-    fig = go.Figure(data=go.Scatter(x=x_values, y=y_values))
+    # Sort the x-values (time objects) chronologically
+    sorted_indices = sorted(range(len(x_values)), key=lambda i: x_values[i])
+    x_values = [x_values[i] for i in sorted_indices]
+    y_values = [y_values[i] for i in sorted_indices]
 
+    # Create a Plotly line plot
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x_values, y=y_values, mode='markers', name='Upload'))  # Add legend for the line
+
+    # Update layout to include legend
+    fig.update_layout(
+        title='Upload Readings',
+        xaxis_title='Time [HH:MM:SS]',
+        yaxis_title='Upload (Mbit/s)',
+        legend=dict(title='Legend', orientation='h', yanchor='top', y=1.1, xanchor='center', x=0.5)  # Adjust legend position
+    )
+    
     # Convert the Plotly figure to HTML
     html_output = fig.to_html(full_html=False)
     
-    # pio.show(fig, renderer='browser')
     return render_template('graph_index.html', static_folder='static', plot_html=html_output)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+#     @app.route('/to_graph_index', methods=['GET'])
+# def to_graph_index():
+#     # Query MongoDB to get the data, sorted by ascending time values
+#     cursor = mongo.db.WiSpeed.find({}, {'_id': 0, 'Time': 1, 'Upload': 1}).sort('Time', 1)
+    
+#     # Extract x and y values from the query result
+#     x_values = []
+#     y_values = []
+#     for document in cursor:
+#         # Convert the time string to a datetime object
+#         time_str = document['Time']
+#         time_obj = datetime.strptime(time_str, '%H:%M:%S')
+
+#         x_values.append(time_obj)
+#         y_values.append(document['Upload'])
+
+#     # Sort the x-values (time objects) chronologically
+#     sorted_indices = sorted(range(len(x_values)), key=lambda i: x_values[i])
+#     x_values = [x_values[i] for i in sorted_indices]
+#     y_values = [y_values[i] for i in sorted_indices]
+
+#     # Filter out x-values where y-values are present
+#     x_values_filtered = [x_values[i] for i in range(len(y_values)) if y_values[i] is not None]
+#     y_values_filtered = [y_values[i] for i in range(len(y_values)) if y_values[i] is not None]
+
+#     # Create a Plotly scatter plot with mode set to 'markers'
+#     fig = go.Figure()
+#     fig.add_trace(go.Scatter(x=x_values_filtered, y=y_values_filtered, mode='markers', name='Upload'))  # Add legend for the line
+
+#     # Update layout to include legend
+#     fig.update_layout(
+#         title='Upload Readings',
+#         xaxis_title='Time [HH:MM:SS]',
+#         yaxis_title='Upload (Mbit/s)',
+#         legend=dict(title='Legend', orientation='h', yanchor='top', y=1.1, xanchor='center', x=0.5),  # Adjust legend position
+#         xaxis=dict(
+#             tickmode='array',  # Use specified tick values
+#             tickvals=x_values_filtered,  # Use x-values where y-values are present
+#             ticktext=[time.strftime('%H:%M:%S', t.timetuple()) for t in x_values_filtered]  # Format x-axis tick labels as HH:MM:SS
+#         )
+#     )
+
+#     # Convert the Plotly figure to HTML
+#     html_output = fig.to_html(full_html=False)
+    
+#     return render_template('graph_index.html', static_folder='static', plot_html=html_output)
