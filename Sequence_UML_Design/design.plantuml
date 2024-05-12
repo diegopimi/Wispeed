@@ -6,5 +6,6 @@ actor Client
 Client -> Service: Request readings
 Service -> Service: Perform command
 Service -> WiSpeed_DB: Store readings in database
-WiSpeed_DB -> Client: Display readings in website
+WiSpeed_DB -> Service: Read data
+Service -> Client: Display readings
 @enduml
