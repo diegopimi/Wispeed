@@ -52,7 +52,7 @@ Inside the test directory; pytest test_app.py > [name of file to store results].
 - Follow consistent coding standards.
 - Create UML and following documentation and proper design.
 - Comment functionality of the code.
-- Users will have the ability to create client accounts / Admin accounts.
+- Users will have the ability to create client accounts / Admin accounts. ( maybe unecessary for the purpose of this app? maybe requires different database? )
 - Different layouts (options, website) shall be shown according to user type (client/admin).
 - CRUD will be available (preferrably only to admin).
 
