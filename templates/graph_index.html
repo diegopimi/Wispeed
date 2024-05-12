@@ -10,7 +10,8 @@
   <h1 class="headers">Wispeed Graph</h1>
   <div id="graph-container">
     <script>
-        var plot = '{{ plot_html | safe }}';
+        var plot = '{{ plot_download | safe }}';
+        var plot = '{{ plot_upload | safe }}';
     </script>
   </div>
   </body>
