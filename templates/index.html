@@ -54,6 +54,13 @@
             <button type="submit" class="button">Run Periodically</button>
         </form>
     </div>
+    {% if popup %}
+    <div class="messages">
+        {% for message in popup %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
     <h2 class="subheaders">Schedule a Reading</h2>
     <div class="form-container">
         <form action="{{ url_for('run_dated') }}" method="post">
@@ -81,12 +88,5 @@
         </form>
     </div>
     <br> 
-    {% if popup %}
-    <div class="messages">
-        {% for message in popup %}
-        <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
 </body>
 </html>
