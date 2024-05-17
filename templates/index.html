@@ -3,11 +3,13 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='myScripts.js') }}" defer></script>
     <title>WiSpeed</title> 
 </head>
 <body>
     <div class="background-image"></div>
     <h1 class="headers">WiSpeed Readings</h1>
+    
     <table>
         <thead>
             <tr>
@@ -79,6 +81,12 @@
         </form>
     </div>
     <br> 
-
+    {% if popup %}
+    <div class="messages">
+        {% for message in popup %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
 </body>
 </html>

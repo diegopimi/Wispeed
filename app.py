@@ -29,13 +29,14 @@ def run_main():
 
 @app.route('/run_periodical', methods=['POST'])
 def run_periodical():
-    try:    
-        frequency = float(request.form['frequency'])          # Get frequency value from the form
-        max_occurrences = int(request.form['occurrences'])    # Get max occurrences value from the form
-        periodic_reading(frequency, max_occurrences)          # Call the periodic_reading function with the values
+    try:
+        frequency = float(request.form['frequency'])
+        max_occurrences = int(request.form['occurrences'])
+        messages = periodic_reading(frequency, max_occurrences)
+        return render_template('index.html', popup=messages)
     except subprocess.CalledProcessError as e:
         print("Error running periodic_reading.py:", e)
-    return redirect(url_for('index'))
+    return redirect(url_for('index', messages=messages, popup=messages))
 
 @app.route('/return_dated', methods=['POST'])
 def return_dated():
@@ -70,7 +71,6 @@ def to_graph_index():
     download_graph = graph_download()
     upload_graph = graph_upload()
     return render_template('graph_index.html', static_folder='static', plot_download=download_graph, plot_upload=upload_graph)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
