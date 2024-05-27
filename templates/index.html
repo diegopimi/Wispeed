@@ -1,13 +1,14 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='myScripts.js') }}" defer></script>
     <title>WiSpeed</title> 
 </head>
 <body>
     <div class="background-image"></div>
     <h1 class="headers">WiSpeed Readings</h1>
+    
     <table>
         <thead>
             <tr>
@@ -30,17 +31,17 @@
     </table>
     <h2 class="subheaders">Show all readings!</h2>
     <br> 
-    <form action="{{ url_for('return_all') }}" method="post">
-        <button type="submit" class="button">See all readings!</button>
+    <form action="{{ url_for('return_all') }}" method="post" onsubmit="showLoading('allButton')">
+        <button type="submit" class="button" id="allButton">See all readings!</button>
     </form>
     <h2 class="subheaders">Obtain Reading Now</h2>
     <br> 
-    <form action="{{ url_for('run_main') }}" method="post">
-        <button type="submit" class="button">Run Main Script</button>
+    <form action="{{ url_for('run_main') }}" method="post" onsubmit="showLoading('mainButton')">
+        <button type="submit" class="button" id="mainButton">Run Main Script</button>
     </form>
     <h2 class="subheaders">Obtain Reading Periodically</h2>
     <div class="form-container">
-        <form action="{{ url_for('run_periodical') }}" method="post">
+        <form action="{{ url_for('run_periodical') }}" method="post" onsubmit="showLoading('readingButton')">
             <div>
                 <label for="frequency" class="label">Frequency (in minutes):</label>
                 <input type="text" class="textbox" id="frequency" name="frequency">
@@ -49,36 +50,42 @@
                 <label for="occurrences"  class="label">Occurrences:</label>
                 <input type="text" class="textbox" id="occurrences" name="occurrences">
             </div>
-            <button type="submit" class="button">Run Periodically</button>
+            <button type="submit" class="button" id="readingButton">Run Periodically</button>
         </form>
     </div>
+    {% if popup %}
+    <div class="messages">
+        {% for message in popup %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
     <h2 class="subheaders">Schedule a Reading</h2>
     <div class="form-container">
-        <form action="{{ url_for('run_dated') }}" method="post">
+        <form action="{{ url_for('run_dated') }}" method="post" onsubmit="showLoading('scheduleButton')">
             <div>
                 <label for="time"  class="label">Run at specific time (HH:MM:SS):</label>
                 <input type="text" class="textbox" id="time" name="time">
-                <button type="submit" class="button">Schedule</button>
+                <button type="submit" class="button" id="scheduleButton">Schedule</button>
             </div>
         </form>
     </div>
     <div class="form-container">
-        <form action="{{ url_for('return_dated') }}" method="post">
+        <form action="{{ url_for('return_dated') }}" method="post" onsubmit="showLoading('datedButton')">
             <div>
                 <label for="date"  class="label">Date (MM-DD-YYYY):</label>
                 <input type="text" class="textbox" id="date" name="date">
-                <button type="submit" class="button">Return readings</button>
+                <button type="submit" class="button" id="datedButton">Return readings</button>
             </div>
         </form>
     </div>
     <div class="form-container">
-        <form action="{{ url_for('to_graph_index') }}" method="get">
+        <form action="{{ url_for('to_graph_index') }}" method="get" onsubmit="showLoading('graphButton')">
             <div>
-                <button type="submit" class="button">Graph</button>
+                <button type="submit" class="button" id="graphButton">Graph</button>
             </div>
         </form>
     </div>
     <br> 
-
 </body>
 </html>

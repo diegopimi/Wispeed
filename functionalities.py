@@ -6,6 +6,8 @@ import threading
 import sched
 from datetime import datetime
 import time
+from flask import redirect, url_for
+
 
 # Global variables
 global_cmd = "speedtest-cli"
@@ -52,12 +54,19 @@ def main_func():
     except Exception as e:
         print("Error running main_func:", e)
 
-def periodic_reading(frequency, max):
+def periodic_reading(frequency, max_occurrences):
+    messages = []
     counter = 0
-    while counter < max:
-        main_func()                               # Call the main_func function
-        time.sleep(frequency*seconds_to_minutes)  # Convert frequency to minutes
-        counter += 1   
+    while counter < max_occurrences:
+        main_func()
+        read_count = counter + 1
+        messages.append(f"Reading speed {read_count} / {max_occurrences}")
+        time.sleep(frequency * seconds_to_minutes)
+        counter += 1
+    return messages 
+
+def pop_up_rend(count):
+    return redirect(url_for('index', popup = count))
 
 def returnReading(date):
     return crudFunc.returnReading(date)

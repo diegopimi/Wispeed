@@ -4,7 +4,7 @@ import subprocess
 import sched
 import time
 from datetime import datetime
-from functionalities import periodic_reading, returnReading, returnAll, readingAt, scheduler
+from functionalities import returnReading, seconds_to_minutes, returnAll, readingAt, scheduler
 from WiGraph.plot import graph_download, graph_upload
 import plotly.graph_objs as go
 import plotly.io as pio
@@ -29,13 +29,21 @@ def run_main():
 
 @app.route('/run_periodical', methods=['POST'])
 def run_periodical():
-    try:    
-        frequency = float(request.form['frequency'])          # Get frequency value from the form
-        max_occurrences = int(request.form['occurrences'])    # Get max occurrences value from the form
-        periodic_reading(frequency, max_occurrences)          # Call the periodic_reading function with the values
+    try:
+        frequency = float(request.form['frequency'])
+        max_occurrences = int(request.form['occurrences'])
+        messages = []
+        counter = 0
+        while counter < max_occurrences:
+            subprocess.run(["python", "main.py"], check=True)
+            read_count = counter + 1
+            messages.append(f"Coffee Ready: {read_count} / {max_occurrences}")
+            time.sleep(frequency * seconds_to_minutes)
+            counter += 1
+        #   Ideally I would render this page multiple times updating the count
     except subprocess.CalledProcessError as e:
         print("Error running periodic_reading.py:", e)
-    return redirect(url_for('index'))
+    return redirect(url_for('index', messages=messages))
 
 @app.route('/return_dated', methods=['POST'])
 def return_dated():
@@ -70,7 +78,6 @@ def to_graph_index():
     download_graph = graph_download()
     upload_graph = graph_upload()
     return render_template('graph_index.html', static_folder='static', plot_download=download_graph, plot_upload=upload_graph)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
