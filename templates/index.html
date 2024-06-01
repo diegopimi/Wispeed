@@ -44,7 +44,7 @@
         <form action="{{ url_for('run_periodical') }}" method="post" onsubmit="showLoading('readingButton')">
             <div>
                 <label for="frequency" class="label">Frequency (in minutes):</label>
-                <input type="text" pattern="^[0-9]*$" class="textbox" id="frequency" name="frequency">
+                <input type="text" pattern="^\d+(\.\d+)?$" class="textbox" id="frequency" name="frequency">
             </div>
             <div>
                 <label for="occurrences"  class="label">Occurrences:</label>
