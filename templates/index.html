@@ -44,11 +44,11 @@
         <form action="{{ url_for('run_periodical') }}" method="post" onsubmit="showLoading('readingButton')">
             <div>
                 <label for="frequency" class="label">Frequency (in minutes):</label>
-                <input type="text" class="textbox" id="frequency" name="frequency">
+                <input type="text" pattern="^[0-9]*$" class="textbox" id="frequency" name="frequency">
             </div>
             <div>
                 <label for="occurrences"  class="label">Occurrences:</label>
-                <input type="text" class="textbox" id="occurrences" name="occurrences">
+                <input type="text" pattern="^[0-9]*$" class="textbox" id="occurrences" name="occurrences">
             </div>
             <button type="submit" class="button" id="readingButton">Run Periodically</button>
         </form>
@@ -65,7 +65,7 @@
         <form action="{{ url_for('run_dated') }}" method="post" onsubmit="showLoading('scheduleButton')">
             <div>
                 <label for="time"  class="label">Run at specific time (HH:MM:SS):</label>
-                <input type="text" class="textbox" id="time" name="time">
+                <input type="text" class="textbox" pattern="^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$" id="time" name="time">
                 <button type="submit" class="button" id="scheduleButton">Schedule</button>
             </div>
         </form>
@@ -74,7 +74,7 @@
         <form action="{{ url_for('return_dated') }}" method="post" onsubmit="showLoading('datedButton')">
             <div>
                 <label for="date"  class="label">Date (MM-DD-YYYY):</label>
-                <input type="text" class="textbox" id="date" name="date">
+                <input type="text"  pattern="^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])-\d{4}$" class="textbox" id="date" name="date">
                 <button type="submit" class="button" id="datedButton">Return readings</button>
             </div>
         </form>
