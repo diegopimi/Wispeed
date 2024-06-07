@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - main_dev
   pull_request:
     branches:
       - main
@@ -35,18 +36,19 @@ jobs:
           choco install mongodb -y
 
       # Start MongoDB (using environment variable for data path)
-      - name: Start MongoDB
-        run: |
-          if (Test-Path "C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe") {
-            "C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe" --dbpath="C:\Program Files\MongoDB\data" --bind_ip 127.0.0.1
-          } else {
-            Write-Host "mongod.exe not found"
-            exit 1
-          }
+      # - name: Start MongoDB
+      #   run: |
+      #     if (Test-Path "C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe") {
+      #       "C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe" --dbpath="C:\Program Files\MongoDB\data" --bind_ip 127.0.0.1
+      #     } else {
+      #       Write-Host "mongod.exe not found"
+      #       exit 1
+      #     }
       # Set up Flask app
       - name: Set up Flask app
         run: |
-          python app.py  # Starts the Flask app
+          Start-Process -NoNewWindow -FilePath "python" -ArgumentList "app.py"
+          Start-Sleep -Seconds 10  # Wait for Flask to start
 
       # Run tests
       - name: Run tests
