@@ -34,11 +34,15 @@ jobs:
         run: |
           choco install mongodb -y
 
-      # Start MongoDB
+      # Start MongoDB (using environment variable for data path)
       - name: Start MongoDB
         run: |
-          "C:\Program Files\MongoDB\Server\4.4\bin\mongod.exe" --dbpath="C:\mongodb\data" --bind_ip 127.0.0.1
-
+          if (Test-Path "C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe") {
+            "C:\Program Files\MongoDB\Server\7.0\bin\mongod.exe" --dbpath="C:\Program Files\MongoDB\data" --bind_ip 127.0.0.1
+          } else {
+            Write-Host "mongod.exe not found"
+            exit 1
+          }
       # Set up Flask app
       - name: Set up Flask app
         run: |
