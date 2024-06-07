@@ -1,6 +1,6 @@
 name: Flask CI
 environment:
-          MONGODB_DATA_DIR: "C:\Program Files\MongoDB\data"  
+  MONGODB_DATA_DIR: "C:\Program Files\MongoDB\data"  
 on:
   push:
     branches:
