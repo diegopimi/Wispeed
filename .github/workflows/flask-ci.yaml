@@ -1,0 +1,46 @@
+name: Flask CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # Specify the Python version you need
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Set up MongoDB
+      - name: Set up MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: '5.0'
+
+      # Start the Flask app (in the background)
+      - name: Start Flask app
+        run: |
+          start /B python app.py  # Starts the Flask app in the background
+
+      # Run tests
+      - name: Run tests
+        run: |
+          pytest test/test_app.py
