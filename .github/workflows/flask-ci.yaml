@@ -1,5 +1,6 @@
 name: Flask CI
-
+environment:
+          MONGODB_DATA_DIR: "C:\Program Files\MongoDB\data"  
 on:
   push:
     branches:
@@ -41,12 +42,7 @@ jobs:
             echo "Error: mongod.exe not found. Please check the installation path."
             exit 1
           fi
-
           mongod.exe --dbpath "$MONGODB_DATA_DIR" --bind_ip 127.0.0.1
-
-        environment:
-          MONGODB_DATA_DIR: "C:\Program Files\MongoDB\data"  # Adjust as needed
-
 
       # Set up Flask app
       - name: Set up Flask app
