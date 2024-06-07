@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-latest  # Specify Windows environment
 
     steps:
       # Checkout the code from the repository
@@ -29,16 +29,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Set up MongoDB
-      - name: Set up MongoDB
-        uses: supercharge/mongodb-github-action@1.6.0
-        with:
-          mongodb-version: '5.0'
-
-      # Start the Flask app (in the background)
-      - name: Start Flask app
+      # Install MongoDB
+      - name: Install MongoDB
         run: |
-          start /B python app.py  # Starts the Flask app in the background
+          choco install mongodb -y
+
+      # Start MongoDB
+      - name: Start MongoDB
+        run: |
+          "C:\Program Files\MongoDB\Server\4.4\bin\mongod.exe" --dbpath="C:\mongodb\data" --bind_ip 127.0.0.1
+
+      # Set up Flask app
+      - name: Set up Flask app
+        run: |
+          python app.py  # Starts the Flask app
 
       # Run tests
       - name: Run tests
