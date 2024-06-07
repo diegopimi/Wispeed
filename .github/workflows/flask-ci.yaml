@@ -46,7 +46,8 @@ jobs:
       # Set up Flask app
       - name: Set up Flask app
         run: |
-          python app.py  # Starts the Flask app
+          Start-Process -NoNewWindow -FilePath "python" -ArgumentList "app.py"
+          Start-Sleep -Seconds 10  # Wait for Flask to start
 
       # Run tests
       - name: Run tests
