@@ -4,7 +4,7 @@ import subprocess
 import sched
 import time
 from datetime import datetime
-from functionalities import periodic_reading, returnReading, returnAll, readingAt, scheduler
+from functionalities import periodic_reading, return_reading, return_all, reading_at, scheduler
 import plotly.graph_objs as go
 import plotly.io as pio
 

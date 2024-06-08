@@ -10,7 +10,7 @@ db = client['DBPimi']
 wispeed_collection = db['WiSpeed']
 
 
-def addReading(download, upload, date_r, time_r):
+def db_add_reading(download, upload, date_r, time_r):
     wifi_data = {
         'Download': download,
         'Upload': upload,
@@ -20,13 +20,13 @@ def addReading(download, upload, date_r, time_r):
     result = wispeed_collection.insert_one(wifi_data)
     return True
 
-def returnReading(date_r):
+def db_return_reading(date_r):
     wifi_data = {
         'Date': date_r
     }
     result = wispeed_collection.find(wifi_data)
     return result
 
-def returnAll():
+def db_return_all():
     result = wispeed_collection.find()
     return result

@@ -48,7 +48,7 @@ def main_func():
 
             date_r = datetime.now().strftime("%Y-%m-%d")
             time_r = datetime.now().strftime("%H:%M:%S")
-            crudFunc.addReading(download_speed, upload_speed, date_r, time_r)
+            crudFunc.add_reading(download_speed, upload_speed, date_r, time_r)
         else:
             print("Error: Unable to extract speed values from command output")
     except Exception as e:
@@ -68,11 +68,11 @@ def periodic_reading(frequency, max_occurrences):
 def pop_up_rend(count):
     return redirect(url_for('index', popup = count))
 
-def returnReading(date):
-    return crudFunc.returnReading(date)
+def return_reading(date):
+    return crudFunc.db_return_reading(date)
 
-def returnAll():
-    return crudFunc.returnAll()
+def return_all():
+    return crudFunc.db_return_all()
 
 def convert_to_computer_time(user_input):
     try:
@@ -88,7 +88,7 @@ def convert_to_computer_time(user_input):
         print("Invalid input format. Please enter time in HH:MM:SS format.")
         return None
 
-def readingAt(time_str):
+def reading_at(time_str):
     computer_time = convert_to_computer_time(time_str)
     if computer_time:
         print("Computer time:", datetime.fromtimestamp(computer_time))
