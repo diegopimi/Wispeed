@@ -4,7 +4,7 @@ import subprocess
 import sched
 import time
 from datetime import datetime
-from functionalities import returnReading, seconds_to_minutes, returnAll, readingAt, scheduler
+from functionalities import return_reading, return_all, seconds_to_minutes, reading_at, scheduler
 from WiGraph.plot import graph_download, graph_upload
 import plotly.graph_objs as go
 import plotly.io as pio
@@ -37,7 +37,7 @@ def run_periodical():
         while counter < max_occurrences:
             subprocess.run(["python", "main.py"], check=True)
             read_count = counter + 1
-            messages.append(f"Coffee Ready: {read_count} / {max_occurrences}")
+            messages.append(f"Readings performed: {read_count} / {max_occurrences}")
             time.sleep(frequency * seconds_to_minutes)
             counter += 1
         #   Ideally I would render this page multiple times updating the count
@@ -49,16 +49,16 @@ def run_periodical():
 def return_dated():
     try:    
         date = str(request.form['date'])          # Get date from the form
-        readings=returnReading(date)              # Call the periodic_reading function with the values
+        readings=return_reading(date)              # Call the periodic_reading function with the values
         return render_template('index.html', data=readings)
     except subprocess.CalledProcessError as e:
         print("Error running request:", e)
     return redirect(url_for('index'))
 
-@app.route('/return_all', methods=['POST'])
-def return_all():
+@app.route('/return_all_readings', methods=['POST'])
+def return_all_readings():
     try:    
-        readings=returnAll()          # Call the periodic_reading function with the values
+        readings=return_all()          # Call the periodic_reading function with the values
         return render_template('index.html', data=readings)
     except subprocess.CalledProcessError as e:
         print("Error running request:", e)
@@ -68,7 +68,7 @@ def return_all():
 def run_dated():
     try:    
         time_str = str(request.form['time'])
-        readingAt(time_str)          # Call the periodic_reading function with the values
+        reading_at(time_str)          # Call the periodic_reading function with the values
     except subprocess.CalledProcessError as e:
         print("Error running request:", e)
     return redirect(url_for('index'))

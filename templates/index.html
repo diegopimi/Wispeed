@@ -31,7 +31,7 @@
     </table>
     <h2 class="subheaders">Show all readings!</h2>
     <br> 
-    <form action="{{ url_for('return_all') }}" method="post" onsubmit="showLoading('allButton')">
+    <form action="{{ url_for('return_all_readings') }}" method="post" onsubmit="showLoading('allButton')">
         <button type="submit" class="button" id="allButton">See all readings!</button>
     </form>
     <h2 class="subheaders">Obtain Reading Now</h2>
@@ -74,7 +74,7 @@
         <form action="{{ url_for('return_dated') }}" method="post" onsubmit="showLoading('datedButton')">
             <div>
                 <label for="date"  class="label">Date (MM-DD-YYYY):</label>
-                <input type="text"  pattern="^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])-\d{4}$" class="textbox" id="date" name="date">
+                <input type="text"  pattern="^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$" class="textbox" id="date" name="date">
                 <button type="submit" class="button" id="datedButton">Return readings</button>
             </div>
         </form>

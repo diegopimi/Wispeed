@@ -3,12 +3,12 @@ from app import app
 from flask import url_for
 
 class TestAppFunctionality(unittest.TestCase):
-    def setUp(self):
+    def set_up(self):
         # Set up the Flask app for testing
         app.testing = True
         self.app = app.test_client()
 
-    def tearDown(self):
+    def tear_down(self):
         # Clean up after each test
         pass
 
