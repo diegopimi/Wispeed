@@ -2,8 +2,6 @@ The intention of this project is to create an **app that is capable of reading a
 
 Ideally the app should **return results in a graphical manner** and should have a **nice user interface**. 
 
-**THIS PROJECT HAS A LONG WAY TO GO**
-
 
 **-----------    SETUP   -----------** 
 
@@ -55,6 +53,7 @@ Inside the test directory; pytest test_app.py > [name of file to store results].
 - Users will have the ability to create client accounts / Admin accounts. ( maybe unecessary for the purpose of this app? maybe requires different database? )
 - Different layouts (options, website) shall be shown according to user type (client/admin).
 - CRUD will be available (preferrably only to admin).
+- The project will count with a CI pipeline triggered upon push and PR to ensure the integrity of the builds. 
 
 **-------- TIPS AND TRICKS --------**
 
