@@ -38,7 +38,7 @@ class TestAppFunctionality(unittest.TestCase):
 
     def test_return_all_route(self):
         # Test the route that returns all readings
-        response = self.app.post('/return_all')
+        response = self.app.post('/return_all_readings')
         self.assertEqual(response.status_code, 200)
         # Add more assertions to check the content of the response if needed
 
