@@ -32,7 +32,13 @@
     <h2 class="subheaders">Show all readings!</h2>
     <br> 
     <form action="{{ url_for('return_all_readings') }}" method="post" onsubmit="showLoading('allButton')">
-        <button type="submit" class="button" id="allButton">See all readings!</button>
+        <button type="submit" class="button" id="allButton">See all readings! (by date)</button>
+    </form>
+    <form action="{{ url_for('view_by_download') }}" method="post" onsubmit="showLoading('byDownload')">
+        <button type="submit" class="button" id="byDownload">Sort by Download Speed</button>
+    </form>
+    <form action="{{ url_for('view_by_upload') }}" method="post" onsubmit="showLoading('byUpload')">
+        <button type="submit" class="button" id="byUpload">Sort by Upload Speed</button>
     </form>
     <h2 class="subheaders">Obtain Reading Now</h2>
     <br> 

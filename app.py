@@ -4,7 +4,7 @@ import subprocess
 import sched
 import time
 from datetime import datetime
-from functionalities import return_reading, return_all, seconds_to_minutes, reading_at, scheduler
+from functionalities import return_reading, return_by_download, return_by_upload, return_all, seconds_to_minutes, reading_at, scheduler
 from WiGraph.plot import graph_download, graph_upload
 import plotly.graph_objs as go
 import plotly.io as pio
@@ -59,6 +59,24 @@ def return_dated():
 def return_all_readings():
     try:    
         readings=return_all()          # Call the periodic_reading function with the values
+        return render_template('index.html', data=readings)
+    except subprocess.CalledProcessError as e:
+        print("Error running request:", e)
+    return redirect(url_for('index'))
+
+@app.route('/view_by_download', methods=['POST'])
+def view_by_download():
+    try:    
+        readings=return_by_download()          # Call the periodic_reading function with the values
+        return render_template('index.html', data=readings)
+    except subprocess.CalledProcessError as e:
+        print("Error running request:", e)
+    return redirect(url_for('index'))
+
+@app.route('/view_by_upload', methods=['POST'])
+def view_by_upload():
+    try:    
+        readings=return_by_upload()          # Call the periodic_reading function with the values
         return render_template('index.html', data=readings)
     except subprocess.CalledProcessError as e:
         print("Error running request:", e)
