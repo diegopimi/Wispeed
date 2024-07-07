@@ -74,6 +74,12 @@ def return_reading(date):
 def return_all():
     return crudFunc.db_return_all()
 
+def return_by_download():
+    return crudFunc.db_return_by_download()
+
+def return_by_upload():
+    return crudFunc.db_return_by_upload()
+
 def convert_to_computer_time(user_input):
     try:
         # Parse user input into a datetime object

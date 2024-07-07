@@ -1,6 +1,7 @@
 import subprocess
 import datetime
 import re
+import pymongo
 from pymongo import MongoClient
 client = MongoClient('localhost', 27017)
 
@@ -29,4 +30,12 @@ def db_return_reading(date_r):
 
 def db_return_all():
     result = wispeed_collection.find()
+    return result
+
+def db_return_by_download():
+    result = wispeed_collection.find().sort('Download', -1)
+    return result
+
+def db_return_by_upload():
+    result = wispeed_collection.find().sort('Upload', -1)
     return result
