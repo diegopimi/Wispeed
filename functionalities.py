@@ -48,7 +48,7 @@ def main_func():
 
             date_r = datetime.now().strftime("%Y-%m-%d")
             time_r = datetime.now().strftime("%H:%M:%S")
-            crudFunc.add_reading(download_speed, upload_speed, date_r, time_r)
+            crudFunc.db_add_reading(download_speed, upload_speed, date_r, time_r)
         else:
             print("Error: Unable to extract speed values from command output")
     except Exception as e:
