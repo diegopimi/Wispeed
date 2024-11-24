@@ -1,15 +1,11 @@
 import subprocess
 import re
-from pymongo import MongoClient
-import crudFunc
-import threading
+import process_data
 import sched
 from datetime import datetime
 import time
 from flask import redirect, url_for
 
-
-# Global variables
 global_cmd = "speedtest-cli"
 global_optn = "--secure"
 seconds_to_minutes = 60
@@ -19,26 +15,21 @@ scheduler = sched.scheduler(time.time, time.sleep)
 def repeat_function(func, interval):
     count = 0
     while (count<interval):
-        func()                # Call the specified function
-        time.sleep(interval)  # Wait for the specified interval
+        func()                
+        time.sleep(interval)  
         count=count+1
 
 def main_func():
     try:
-        # Define the command to run
         command = [global_cmd, global_optn]
 
-        # Run the command and capture the output
         result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
-        # Print the command output
         print("=======Performing WIFI Test=======")
 
-        # Extract numerical values only
         download_speed_match = re.search(r'Download: ([\d.]+)', result.stdout)
         upload_speed_match = re.search(r'Upload: ([\d.]+)', result.stdout)
 
-        # Check if matches are found
         if download_speed_match and upload_speed_match:
             download_speed = download_speed_match.group(1)
             upload_speed = upload_speed_match.group(1)
@@ -48,11 +39,11 @@ def main_func():
 
             date_r = datetime.now().strftime("%Y-%m-%d")
             time_r = datetime.now().strftime("%H:%M:%S")
-            crudFunc.db_add_reading(download_speed, upload_speed, date_r, time_r)
+            process_data.db_add_reading(download_speed, upload_speed, date_r, time_r)
         else:
             print("Error: Unable to extract speed values from command output")
     except Exception as e:
-        print("Error running main_func:", e)
+        print("Requester: Error running main_func:", e)
 
 def periodic_reading(frequency, max_occurrences):
     messages = []
@@ -69,28 +60,24 @@ def pop_up_rend(count):
     return redirect(url_for('index', popup = count))
 
 def return_reading(date):
-    return crudFunc.db_return_reading(date)
+    return process_data.db_return_reading(date)
 
 def return_all():
-    return crudFunc.db_return_all()
+    return process_data.db_return_all()
 
 def return_by_download():
-    return crudFunc.db_return_by_download()
+    return process_data.db_return_by_download()
 
 def return_by_upload():
-    return crudFunc.db_return_by_upload()
+    return process_data.db_return_by_upload()
 
 def convert_to_computer_time(user_input):
     try:
-        # Parse user input into a datetime object
         user_time = datetime.strptime(user_input, '%H:%M:%S').time()
-        # Convert datetime.time object to datetime.datetime object
         user_datetime = datetime.combine(datetime.today(), user_time)
-        # Convert datetime.datetime object to seconds since the epoch
         user_seconds = time.mktime(user_datetime.timetuple())
         return user_seconds
     except ValueError:
-        # Handle invalid input format
         print("Invalid input format. Please enter time in HH:MM:SS format.")
         return None
 
