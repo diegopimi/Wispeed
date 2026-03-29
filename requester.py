@@ -1,95 +1,124 @@
 import subprocess
 import re
-import process_data
 import sched
-from datetime import datetime
 import time
-from flask import redirect, url_for
+from datetime import datetime
 
-global_cmd = "speedtest-cli"
-global_optn = "--secure"
-seconds_to_minutes = 60
+import process_data
+
+# ── Constants ────────────────────────────────────────────────────────────────
+
+SPEEDTEST_CMD  = ["speedtest-cli", "--secure"]
+SECONDS_PER_MINUTE = 60
+
+# Single scheduler instance — owned here, imported by app.py (never overwritten)
 scheduler = sched.scheduler(time.time, time.sleep)
-# ---------------
 
-def repeat_function(func, interval):
-    count = 0
-    while (count<interval):
-        func()                
-        time.sleep(interval)  
-        count=count+1
 
-def main_func():
+# ── Core speed test ──────────────────────────────────────────────────────────
+
+def main_func() -> bool:
+    """
+    Run one speed test, parse the output, and persist the result.
+    Returns True on success, False on failure.
+    """
     try:
-        command = [global_cmd, global_optn]
+        print("======= Performing Wi-Fi Test =======")
+        result = subprocess.run(
+            SPEEDTEST_CMD,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
 
-        result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+        if result.returncode != 0:
+            print(f"[requester] speedtest-cli exited with code {result.returncode}: {result.stderr.strip()}")
+            return False
 
-        print("=======Performing WIFI Test=======")
+        dl_match = re.search(r"Download: ([\d.]+)", result.stdout)
+        ul_match = re.search(r"Upload: ([\d.]+)",   result.stdout)
 
-        download_speed_match = re.search(r'Download: ([\d.]+)', result.stdout)
-        upload_speed_match = re.search(r'Upload: ([\d.]+)', result.stdout)
+        if not dl_match or not ul_match:
+            print("[requester] Could not parse speed values from output.")
+            print("[requester] Raw output:", result.stdout)
+            return False
 
-        if download_speed_match and upload_speed_match:
-            download_speed = download_speed_match.group(1)
-            upload_speed = upload_speed_match.group(1)
+        download_speed = float(dl_match.group(1))
+        upload_speed   = float(ul_match.group(1))
 
-            print("Download Speed (Mbit/s):", download_speed)
-            print("Upload Speed (Mbit/s):", upload_speed)
+        print(f"[requester] Download: {download_speed} Mbit/s")
+        print(f"[requester] Upload:   {upload_speed} Mbit/s")
 
-            date_r = datetime.now().strftime("%Y-%m-%d")
-            time_r = datetime.now().strftime("%H:%M:%S")
-            process_data.db_add_reading(download_speed, upload_speed, date_r, time_r)
-        else:
-            print("Error: Unable to extract speed values from command output")
+        date_r = datetime.now().strftime("%Y-%m-%d")
+        time_r = datetime.now().strftime("%H:%M:%S")
+        process_data.db_add_reading(download_speed, upload_speed, date_r, time_r)
+        return True
+
     except Exception as e:
-        print("Requester: Error running main_func:", e)
+        print(f"[requester] Unexpected error in main_func: {e}")
+        return False
 
-def periodic_reading(frequency, max_occurrences):
+
+# ── Periodic reading ─────────────────────────────────────────────────────────
+
+def periodic_reading(frequency_minutes: float, max_occurrences: int) -> list[str]:
+    """
+    Run `max_occurrences` speed tests, waiting `frequency_minutes` between each.
+    Returns a list of status messages.
+    Note: call this from a background thread — it blocks for the full duration.
+    """
     messages = []
-    counter = 0
-    while counter < max_occurrences:
-        main_func()
-        read_count = counter + 1
-        messages.append(f"Reading speed {read_count} / {max_occurrences}")
-        time.sleep(frequency * seconds_to_minutes)
-        counter += 1
-    return messages 
+    for i in range(1, max_occurrences + 1):
+        success = main_func()
+        status  = "OK" if success else "FAILED"
+        msg     = f"Reading {i}/{max_occurrences} — {status}"
+        messages.append(msg)
+        print(f"[requester] {msg}")
+        if i < max_occurrences:
+            time.sleep(frequency_minutes * SECONDS_PER_MINUTE)
+    return messages
 
-def pop_up_rend(count):
-    return redirect(url_for('index', popup = count))
 
-def return_reading(date):
-    return process_data.db_return_reading(date)
+# ── Scheduled reading ────────────────────────────────────────────────────────
 
-def return_all():
-    return process_data.db_return_all()
-
-def return_by_download():
-    return process_data.db_return_by_download()
-
-def return_by_upload():
-    return process_data.db_return_by_upload()
-
-def convert_to_computer_time(user_input):
+def _parse_time_to_timestamp(time_str: str) -> float | None:
+    """
+    Parse a HH:MM:SS string into a Unix timestamp for today.
+    Returns None if the format is invalid or the time has already passed.
+    """
     try:
-        user_time = datetime.strptime(user_input, '%H:%M:%S').time()
+        user_time     = datetime.strptime(time_str, "%H:%M:%S").time()
         user_datetime = datetime.combine(datetime.today(), user_time)
-        user_seconds = time.mktime(user_datetime.timetuple())
-        return user_seconds
+        timestamp     = user_datetime.timestamp()
+
+        if timestamp <= time.time():
+            print(f"[requester] Scheduled time {time_str} has already passed today.")
+            return None
+
+        return timestamp
     except ValueError:
-        print("Invalid input format. Please enter time in HH:MM:SS format.")
+        print(f"[requester] Invalid time format '{time_str}'. Expected HH:MM:SS.")
         return None
 
-def reading_at(time_str):
-    computer_time = convert_to_computer_time(time_str)
-    if computer_time:
-        print("Computer time:", datetime.fromtimestamp(computer_time))
-        scheduler.enterabs(computer_time, 1, main_func, ())
 
+def reading_at(time_str: str) -> bool:
+    """
+    Schedule one speed test at the given HH:MM:SS time today.
+    Returns True if successfully scheduled, False otherwise.
+    """
+    timestamp = _parse_time_to_timestamp(time_str)
+    if timestamp is None:
+        return False
+
+    print(f"[requester] Test scheduled for {datetime.fromtimestamp(timestamp)}")
+    scheduler.enterabs(timestamp, 1, main_func, ())
     scheduler.run()
-    return
+    return True
 
-    
 
-    
+# ── Data query pass-throughs ─────────────────────────────────────────────────
+
+def return_reading(date: str)  -> list: return process_data.db_return_reading(date)
+def return_all()               -> list: return process_data.db_return_all()
+def return_by_download()       -> list: return process_data.db_return_by_download()
+def return_by_upload()         -> list: return process_data.db_return_by_upload()
