@@ -1,3 +1,6 @@
-from requester import repeat_function, main_func
+from file_manager import ensure_log_exists
+from requester import main_func
 
-repeat_function(main_func, 1)
+if __name__ == "__main__":
+    ensure_log_exists()
+    main_func()

@@ -1,18 +1,327 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>WiSpeed Graph</title> 
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WiSpeed — Graphs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080c10;
+      --surface:   #0d1117;
+      --card:      #111820;
+      --border:    #1e2a38;
+      --accent:    #00e5ff;
+      --accent2:   #7b61ff;
+      --success:   #00e676;
+      --warn:      #ffab40;
+      --text:      #e2eaf4;
+      --muted:     #4a6080;
+      --font-head: 'Syne', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      background: rgba(8,12,16,.7);
+    }
+
+    .logo {
+      font-family: var(--font-head);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .logo span { color: var(--accent); }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .75rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: .4rem .8rem;
+      border-radius: 6px;
+      transition: color .2s, background .2s;
+    }
+    nav a:hover, nav a.active { color: var(--accent); background: rgba(0,229,255,.06); }
+
+    /* ── MAIN ── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+    }
+
+    /* ── PAGE TITLE ── */
+    .page-header {
+      margin-bottom: 2.5rem;
+    }
+    .page-title {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.02em;
+      line-height: 1.1;
+    }
+    .page-title span { color: var(--accent); }
+    .page-sub {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: .5rem;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-family: var(--font-head);
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── LEGEND PILLS ── */
+    .legend {
+      display: flex; gap: 1rem;
+      margin-bottom: .75rem;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+
+    /* ── GRAPH CARDS ── */
+    .graphs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .graph-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .graph-card:hover {
+      border-color: rgba(0,229,255,.15);
+      box-shadow: 0 0 32px rgba(0,229,255,.04);
+    }
+
+    .graph-card-header {
+      padding: 1.25rem 1.5rem .75rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .graph-card-title {
+      font-family: var(--font-head);
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .graph-card-title .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .dot-dl { background: var(--accent);  box-shadow: 0 0 6px var(--accent);  }
+    .dot-ul { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
+
+    .graph-card-meta {
+      font-size: .65rem;
+      color: var(--muted);
+    }
+
+    .graph-body {
+      padding: 0 .5rem 1rem;
+    }
+
+    /* plotly iframe / div override */
+    .graph-body > div {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* ── FULL-WIDTH GRAPH ── */
+    .graph-card.full {
+      grid-column: 1 / -1;
+    }
+
+    /* ── STAT SUMMARY ROW ── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .mini-stat {
+      background: var(--card);
+      padding: 1rem 1.25rem;
+      display: flex; flex-direction: column; gap: .25rem;
+    }
+    .mini-stat-label {
+      font-size: .6rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+    }
+    .mini-stat-value {
+      font-family: var(--font-head);
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+    .mini-stat-value.dl { color: var(--accent);  }
+    .mini-stat-value.ul { color: var(--accent2); }
+    .mini-stat-value.n  { color: var(--text);    }
+
+    /* ── BACK BUTTON ── */
+    .btn-back {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      text-decoration: none;
+      padding: .5rem .9rem;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: rgba(255,255,255,.03);
+      transition: all .2s;
+    }
+    .btn-back:hover {
+      color: var(--text);
+      border-color: var(--muted);
+      background: rgba(255,255,255,.06);
+    }
+
+    @media (max-width: 800px) {
+      header { padding: 1rem 1.25rem; }
+      main   { padding: 1.5rem 1rem 3rem; }
+      .graphs-grid { grid-template-columns: 1fr; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
 </head>
-<div class="background-imageV2"></div>
 <body>
-  <h1 class="headers">Wispeed Graph</h1>
-  <div id="graph-container">
-    <script>
-        var plot = '{{ plot_download | safe }}';
-        var plot = '{{ plot_upload | safe }}';
-    </script>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">Wi<span>Speed</span></div>
+  <nav>
+    <a href="/">Dashboard</a>
+    <a href="/to_graph_index" class="active">Graphs</a>
+  </nav>
+</header>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <div class="page-header" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <div class="page-title">Network <span>Analytics</span></div>
+      <div class="page-sub">Visual breakdown of your recorded speed readings</div>
+    </div>
+    <a href="/" class="btn-back">← Dashboard</a>
   </div>
-  </body>
+
+  <!-- ── GRAPHS ── -->
+  <div class="section-title">Speed Over Time</div>
+
+  <div class="graphs-grid">
+
+    <!-- Download -->
+    <div class="graph-card">
+      <div class="graph-card-header">
+        <div class="graph-card-title">
+          <div class="dot dot-dl"></div>
+          Download Speed
+        </div>
+        <div class="graph-card-meta">Mbit/s</div>
+      </div>
+      <div class="graph-body">
+        {{ plot_download | safe }}
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div class="graph-card">
+      <div class="graph-card-header">
+        <div class="graph-card-title">
+          <div class="dot dot-ul"></div>
+          Upload Speed
+        </div>
+        <div class="graph-card-meta">Mbit/s</div>
+      </div>
+      <div class="graph-body">
+        {{ plot_upload | safe }}
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  // ── PATCH PLOTLY OUTPUT FOR DARK THEME ──
+  // Plotly graphs injected via | safe — try to force dark bg
+  document.querySelectorAll('.graph-body .plotly-graph-div').forEach(function(el) {
+    el.style.background = 'transparent';
+  });
+
+  // Re-style plotly SVGs if rendered
+  document.querySelectorAll('.graph-body svg').forEach(function(svg) {
+    svg.style.background = 'transparent';
+  });
+</script>
+
+</body>
 </html>

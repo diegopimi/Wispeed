@@ -1,44 +1,69 @@
-The intention of this project is to create an **app that is capable of reading and registering wifi (upload and download speeds) of a network periodically or at user-specified times/frequency**.
+# 📡 WiSpeed
 
-Ideally the app should **return results in a graphical manner** and should have a **nice user interface**. 
+> A lightweight web app for monitoring, logging, and visualizing your network's upload and download speeds — on demand or automatically.
+
+---
+
+## Features
+
+- **Instant speed tests** — run a single test with one click
+- **Periodic testing** — schedule repeated readings at a custom frequency
+- **Timed tests** — queue a reading for a specific time of day
+- **Graphical results** — interactive Plotly charts for download & upload trends
+- **Reading history** — filterable, sortable log of all recorded sessions
+- **Local storage** — all data persisted in a JSON log file, no database required
+
+---
+
+## Setup
+
+### Prerequisites
+
+Install the following before running the project:
+
+```bash
+pip install flask speedtest-cli plotly pytest
+```
+
+Also install:
+- [PlantUML extension](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml) for VS Code *(for UML diagrams)*
+- [Graphviz](https://graphviz.org/download/) *(required by PlantUML)*
 
 
-**-----------    SETUP   -----------** 
 
-Install MongoDB -> Create "DBPimi" database -> add "WiSpeed" Collection
-(make sure to also have MongoDB Compass)
+---
 
-Run these commands in CMD:
-  -  install pip
-  -  pip install speedtest-cli
-  -  pip install flask-pymongo
-  -  have the following folder structure C:\Program Files\MongoDB\data\db (db should be an empty folder)
-  -  install PlantUML extension from vscode
-  -  Install Graphviz
-  -  pip install pytest
-  -  pip install plotly
+## ▶️ How to Run
 
-Clone repository 
+```bash
+python app.py
+```
 
-**----------- HOW TO RUN -----------**
+Then open your browser and navigate to:
 
-1. Open cmd and type 'mongod' to start an instance of MongoDB
-2. Open MongoDB Compass and connect to uri 'mongodb://localhost:27017/'
-3. Open the code project in VSCode and in the terminal type 'python app.py'
-4. In a browser, go to 'http://127.0.0.1:5000/'
-5. Click the button to read wifi speeds. It takes a bit for the readings to occur, reload the page after a couple minutes and you should see the table being populated.
+```
+http://127.0.0.1:5000/
+```
 
-   What happens if I cant connect to the database?
-   
-   Search in taskbar for "Services", look for mongodb and end service. End it in Task Manager as well. Repead steps 1 and 2. If that does not work, restart computer.
+> Speed tests take a moment to complete. After clicking **Run Test**, wait a few seconds and refresh the page to see the new reading appear in the table.
 
-Running testing:
+---
 
-Inside the test directory; pytest test_app.py > [name of file to store results].txt
-   
-**----------------------------------**
+## Running Tests
 
-**REQUIREMENTS / TO-DO LIST** (Not in order):
+From inside the `test/` directory:
+
+```bash
+pytest test_app.py > results.txt
+```
+
+Results will be saved to `results.txt`.
+
+---
+
+## Roadmap / To-Do
+
+> Items are not listed in priority order.
 
 - The user shall be able to specify the frequency of readings. For example, the user can ask for readings to occur every 25 minutes, every 30 seconds, every day, or any other.
 - The user shall be able to specify the time and date in which readings occur. For example February 20th at 5:00 PM and 9:59 PM.
@@ -55,8 +80,15 @@ Inside the test directory; pytest test_app.py > [name of file to store results].
 - CRUD will be available (preferrably only to admin).
 - The project will count with a CI pipeline triggered upon push and PR to ensure the integrity of the builds. 
 
-**-------- TIPS AND TRICKS --------**
+## 💡 Tips & Tricks
 
-1. Modifying UML / Sequence diagram.
-- to see a live preview, right click @startuml and select view preview
-- to export svg (viewable image shown in github), right click @startuml and export as svg
+### Editing UML / Sequence Diagrams
+
+1. Right-click the `@startuml` block in VS Code and select **Preview Current Diagram**
+2. To export: right-click and choose **Export Current Diagram as SVG**
+
+---
+
+## 📄 License
+
+This project is for personal/educational use. No license applied yet.

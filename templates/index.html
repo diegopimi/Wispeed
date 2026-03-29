@@ -1,97 +1,787 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <script src="{{ url_for('static', filename='myScripts.js') }}" defer></script>
-    <title>WiSpeed</title> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WiSpeed — Network Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080c10;
+      --surface:   #0d1117;
+      --card:      #111820;
+      --border:    #1e2a38;
+      --accent:    #00e5ff;
+      --accent2:   #7b61ff;
+      --success:   #00e676;
+      --warn:      #ffab40;
+      --text:      #e2eaf4;
+      --muted:     #4a6080;
+      --font-head: 'Syne', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      background: rgba(8,12,16,.7);
+    }
+
+    .logo {
+      font-family: var(--font-head);
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      color: var(--text);
+    }
+    .logo span { color: var(--accent); }
+
+    .header-actions { display: flex; gap: .75rem; align-items: center; }
+
+    .badge {
+      font-size: .65rem;
+      font-family: var(--font-mono);
+      padding: .25rem .6rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .75rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: .4rem .8rem;
+      border-radius: 6px;
+      transition: color .2s, background .2s;
+    }
+    nav a:hover { color: var(--accent); background: rgba(0,229,255,.06); }
+
+    /* ── TOAST ── */
+    #toast-container {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999;
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+
+    .toast {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .8rem 1.2rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      font-size: .78rem;
+      color: var(--text);
+      min-width: 260px;
+      animation: slideIn .3s ease forwards;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    .toast.removing { animation: slideOut .3s ease forwards; }
+    .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .toast.info .toast-dot    { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .toast.success .toast-dot { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .toast.warn .toast-dot    { background: var(--warn); box-shadow: 0 0 8px var(--warn); }
+
+    @keyframes slideIn  { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+    @keyframes slideOut { from { opacity:1; transform:none; } to { opacity:0; transform:translateX(20px); } }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+    }
+
+    /* ── HERO STATS ── */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+      background: var(--border);
+    }
+
+    .stat-card {
+      background: var(--card);
+      padding: 1.75rem 2rem;
+      display: flex; flex-direction: column; gap: .4rem;
+      position: relative; overflow: hidden;
+      transition: background .2s;
+    }
+    .stat-card:hover { background: #161f2a; }
+
+    .stat-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    }
+    .stat-card.dl::after { background: linear-gradient(90deg, var(--accent), transparent); }
+    .stat-card.ul::after { background: linear-gradient(90deg, var(--accent2), transparent); }
+    .stat-card.ts::after { background: linear-gradient(90deg, var(--success), transparent); }
+
+    .stat-label {
+      font-size: .65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+    .stat-value {
+      font-family: var(--font-head);
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+    .stat-card.dl .stat-value { color: var(--accent); }
+    .stat-card.ul .stat-value { color: var(--accent2); }
+    .stat-unit {
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: .2rem;
+    }
+    .stat-icon {
+      position: absolute; bottom: 1rem; right: 1.25rem;
+      font-size: 2rem; opacity: .07;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-family: var(--font-head);
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── CONTROL GRID ── */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .control-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 1rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .control-card:hover {
+      border-color: rgba(0,229,255,.2);
+      box-shadow: 0 0 24px rgba(0,229,255,.04);
+    }
+
+    .card-header {
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .card-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .card-icon.cyan   { background: rgba(0,229,255,.1);  color: var(--accent);  }
+    .card-icon.purple { background: rgba(123,97,255,.1); color: var(--accent2); }
+    .card-icon.green  { background: rgba(0,230,118,.1);  color: var(--success); }
+    .card-icon.orange { background: rgba(255,171,64,.1); color: var(--warn);    }
+
+    .card-title {
+      font-family: var(--font-head);
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .card-desc {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: .1rem;
+      line-height: 1.5;
+    }
+
+    /* ── INPUTS ── */
+    .field { display: flex; flex-direction: column; gap: .4rem; }
+    .field label {
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .field input {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      padding: .55rem .8rem;
+      width: 100%;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,229,255,.08);
+    }
+    .field input::placeholder { color: var(--muted); }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border: none; cursor: pointer;
+      border-radius: 8px;
+      padding: .65rem 1.25rem;
+      transition: all .2s;
+      position: relative; overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background .15s;
+    }
+    .btn:hover::after { background: rgba(255,255,255,.06); }
+    .btn:active { transform: scale(.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #050a0d;
+      box-shadow: 0 0 20px rgba(0,229,255,.2);
+    }
+    .btn-primary:hover { box-shadow: 0 0 28px rgba(0,229,255,.35); }
+
+    .btn-secondary {
+      background: rgba(123,97,255,.12);
+      color: var(--accent2);
+      border: 1px solid rgba(123,97,255,.25);
+    }
+    .btn-secondary:hover { background: rgba(123,97,255,.2); border-color: var(--accent2); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.08); border-color: var(--muted); }
+
+    .btn-green {
+      background: rgba(0,230,118,.12);
+      color: var(--success);
+      border: 1px solid rgba(0,230,118,.25);
+    }
+    .btn-green:hover { background: rgba(0,230,118,.2); border-color: var(--success); }
+
+    .btn-orange {
+      background: rgba(255,171,64,.12);
+      color: var(--warn);
+      border: 1px solid rgba(255,171,64,.25);
+    }
+    .btn-orange:hover { background: rgba(255,171,64,.2); border-color: var(--warn); }
+
+    .btn.loading .btn-label { opacity: 0; }
+    .btn.loading .btn-spinner { display: block; }
+    .btn-spinner {
+      display: none;
+      position: absolute;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.2);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn-full { width: 100%; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .filter-bar .btn { flex-shrink: 0; }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    thead th {
+      font-size: .62rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+      padding: .85rem 1.25rem;
+      text-align: left;
+      font-weight: 400;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(0,229,255,.03); }
+
+    tbody td {
+      padding: .9rem 1.25rem;
+      font-size: .78rem;
+      color: var(--text);
+    }
+
+    .speed-pill {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .25rem .65rem;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 700;
+    }
+    .speed-pill.dl { background: rgba(0,229,255,.08); color: var(--accent);  }
+    .speed-pill.ul { background: rgba(123,97,255,.08); color: var(--accent2); }
+    .speed-pip { width: 5px; height: 5px; border-radius: 50%; }
+    .speed-pill.dl .speed-pip { background: var(--accent);  box-shadow: 0 0 5px var(--accent);  }
+    .speed-pill.ul .speed-pip { background: var(--accent2); box-shadow: 0 0 5px var(--accent2); }
+
+    .date-cell { color: var(--muted); font-size: .72rem; }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+    .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: .4; }
+    .empty-state p { font-size: .82rem; }
+
+    /* ── PROGRESS BAR (periodic) ── */
+    #progress-wrap {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .prog-label {
+      font-size: .7rem;
+      color: var(--muted);
+      margin-bottom: .5rem;
+      display: flex; justify-content: space-between;
+    }
+    .prog-bar-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .prog-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      transition: width .4s ease;
+      width: 0%;
+    }
+
+    /* ── PULSE INDICATOR ── */
+    .pulse-ring {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--muted);
+    }
+    .pulse-dot.active {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .4; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      header { padding: 1rem 1.25rem; }
+      main   { padding: 1.5rem 1rem 3rem; }
+      .hero  { grid-template-columns: 1fr; }
+      .hero .stat-card { padding: 1.25rem 1.5rem; }
+      .stat-value { font-size: 1.8rem; }
+      .controls-grid { grid-template-columns: 1fr; }
+      thead th, tbody td { padding: .7rem .9rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="background-image"></div>
-    <h1 class="headers">WiSpeed Readings</h1>
-    
+
+<!-- ── TOAST ── -->
+<div id="toast-container"></div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">Wi<span>Speed</span></div>
+  <nav>
+    <a href="/">Dashboard</a>
+    <a href="/to_graph_index">Graphs</a>
+  </nav>
+  <div class="header-actions">
+    <span class="badge">v1.0</span>
+    <div class="pulse-ring">
+      <div class="pulse-dot" id="status-dot"></div>
+      <span id="status-text">Idle</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- HERO STATS -->
+  {% if data and data|length > 0 %}
+  {% set last = data[-1] %}
+  <div class="hero" id="hero-stats">
+    <div class="stat-card dl">
+      <div class="stat-label">↓ Last Download</div>
+      <div class="stat-value" id="stat-dl">{{ last.Download }}</div>
+      <div class="stat-unit">Mbit/s</div>
+      <div class="stat-icon">↓</div>
+    </div>
+    <div class="stat-card ul">
+      <div class="stat-label">↑ Last Upload</div>
+      <div class="stat-value" id="stat-ul">{{ last.Upload }}</div>
+      <div class="stat-unit">Mbit/s</div>
+      <div class="stat-icon">↑</div>
+    </div>
+    <div class="stat-card ts">
+      <div class="stat-label">⏱ Last Tested</div>
+      <div class="stat-value" style="font-size:1.3rem; padding-top:.4rem">{{ last.Date }}</div>
+      <div class="stat-unit">{{ last.Time }}</div>
+      <div class="stat-icon">⏱</div>
+    </div>
+  </div>
+  {% else %}
+  <div class="hero">
+    <div class="stat-card dl">
+      <div class="stat-label">↓ Download</div>
+      <div class="stat-value">—</div>
+      <div class="stat-unit">No readings yet</div>
+    </div>
+    <div class="stat-card ul">
+      <div class="stat-label">↑ Upload</div>
+      <div class="stat-value">—</div>
+      <div class="stat-unit">No readings yet</div>
+    </div>
+    <div class="stat-card ts">
+      <div class="stat-label">⏱ Last Tested</div>
+      <div class="stat-value" style="font-size:1.3rem">—</div>
+      <div class="stat-unit">Run a test to begin</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── CONTROLS ── -->
+  <div class="section-title">Controls</div>
+
+  <div class="controls-grid">
+
+    <!-- Single Reading -->
+    <div class="control-card">
+      <div class="card-header">
+        <div class="card-icon cyan">⚡</div>
+        <div>
+          <div class="card-title">Quick Test</div>
+          <div class="card-desc">Run a single speed test right now</div>
+        </div>
+      </div>
+      <form action="/run_main" method="POST" onsubmit="handleSubmit(this, 'Running speed test…')">
+        <button type="submit" class="btn btn-primary btn-full">
+          <span class="btn-label">Run Test</span>
+          <span class="btn-spinner"></span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Periodic -->
+    <div class="control-card">
+      <div class="card-header">
+        <div class="card-icon purple">🔄</div>
+        <div>
+          <div class="card-title">Periodic Test</div>
+          <div class="card-desc">Run at a set frequency, multiple times</div>
+        </div>
+      </div>
+      <form action="/run_periodical" method="POST" onsubmit="handlePeriodic(this)">
+        <div class="field-row">
+          <div class="field">
+            <label>Frequency (min)</label>
+            <input type="number" name="frequency" placeholder="e.g. 5" step="0.1" min="0.1" required>
+          </div>
+          <div class="field">
+            <label>Occurrences</label>
+            <input type="number" name="occurrences" placeholder="e.g. 3" min="1" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-secondary btn-full" style="margin-top:.25rem">
+          <span class="btn-label">Start Periodic</span>
+          <span class="btn-spinner"></span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Scheduled -->
+    <div class="control-card">
+      <div class="card-header">
+        <div class="card-icon green">🕐</div>
+        <div>
+          <div class="card-title">Scheduled Test</div>
+          <div class="card-desc">Run once at a specific time (HH:MM:SS)</div>
+        </div>
+      </div>
+      <form action="/run_dated" method="POST" onsubmit="handleSubmit(this, 'Test scheduled…')">
+        <div class="field">
+          <label>Time</label>
+          <input type="text" name="time" placeholder="14:30:00" pattern="\d{2}:\d{2}:\d{2}" required>
+        </div>
+        <button type="submit" class="btn btn-green btn-full" style="margin-top:.25rem">
+          <span class="btn-label">Schedule</span>
+          <span class="btn-spinner"></span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="control-card">
+      <div class="card-header">
+        <div class="card-icon orange">📅</div>
+        <div>
+          <div class="card-title">Filter by Date</div>
+          <div class="card-desc">View readings for a specific day</div>
+        </div>
+      </div>
+      <form action="/return_dated" method="POST" onsubmit="handleSubmit(this, 'Filtering…')">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" name="date" required>
+        </div>
+        <button type="submit" class="btn btn-orange btn-full" style="margin-top:.25rem">
+          <span class="btn-label">Filter</span>
+          <span class="btn-spinner"></span>
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- ── PROGRESS (periodic feedback) ── -->
+  <div id="progress-wrap">
+    <div class="prog-label">
+      <span id="prog-text">Preparing…</span>
+      <span id="prog-count">0 / 0</span>
+    </div>
+    <div class="prog-bar-track">
+      <div class="prog-bar-fill" id="prog-fill"></div>
+    </div>
+  </div>
+
+  <!-- ── DATA TABLE ── -->
+  <div class="section-title">Readings</div>
+
+  <div class="filter-bar">
+    <form action="/return_all_readings" method="POST" style="display:inline">
+      <button type="submit" class="btn btn-ghost">All</button>
+    </form>
+    <form action="/view_by_download" method="POST" style="display:inline">
+      <button type="submit" class="btn btn-ghost">Sort ↓ Download</button>
+    </form>
+    <form action="/view_by_upload" method="POST" style="display:inline">
+      <button type="submit" class="btn btn-ghost">Sort ↑ Upload</button>
+    </form>
+  </div>
+
+  <div class="table-wrap">
     <table>
-        <thead>
-            <tr>
-                <th>Download (Mbit/s)</th>
-                <th>Upload (Mbit/s)</th>
-                <th>Date</th>
-                <th>Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in data %}
-            <tr>
-                <td>{{ item.Download }}</td>
-                <td>{{ item.Upload }}</td>
-                <td>{{ item.Date }}</td>
-                <td>{{ item.Time }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>↓ Download (Mbit/s)</th>
+          <th>↑ Upload (Mbit/s)</th>
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if data and data|length > 0 %}
+          {% for entry in data %}
+          <tr>
+            <td style="color:var(--muted)">{{ loop.index }}</td>
+            <td><span class="speed-pill dl"><span class="speed-pip"></span>{{ entry.Download }}</span></td>
+            <td><span class="speed-pill ul"><span class="speed-pip"></span>{{ entry.Upload }}</span></td>
+            <td class="date-cell">{{ entry.Date }}</td>
+            <td class="date-cell">{{ entry.Time }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="empty-icon">📡</div>
+                <p>No readings found. Run a test to get started.</p>
+              </div>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
     </table>
-    <h2 class="subheaders">Show all readings!</h2>
-    <br> 
-    <form action="{{ url_for('return_all_readings') }}" method="post" onsubmit="showLoading('allButton')">
-        <button type="submit" class="button" id="allButton">See all readings! (by date)</button>
-    </form>
-    <form action="{{ url_for('view_by_download') }}" method="post" onsubmit="showLoading('byDownload')">
-        <button type="submit" class="button" id="byDownload">Sort by Download Speed</button>
-    </form>
-    <form action="{{ url_for('view_by_upload') }}" method="post" onsubmit="showLoading('byUpload')">
-        <button type="submit" class="button" id="byUpload">Sort by Upload Speed</button>
-    </form>
-    <h2 class="subheaders">Obtain Reading Now</h2>
-    <br> 
-    <form action="{{ url_for('run_main') }}" method="post" onsubmit="showLoading('mainButton')">
-        <button type="submit" class="button" id="mainButton">Run Main Script</button>
-    </form>
-    <h2 class="subheaders">Obtain Reading Periodically</h2>
-    <div class="form-container">
-        <form action="{{ url_for('run_periodical') }}" method="post" onsubmit="showLoading('readingButton')">
-            <div>
-                <label for="frequency" class="label">Frequency (in minutes):</label>
-                <input type="text" pattern="^\d+(\.\d+)?$" class="textbox" id="frequency" name="frequency">
-            </div>
-            <div>
-                <label for="occurrences"  class="label">Occurrences:</label>
-                <input type="text" pattern="^[0-9]*$" class="textbox" id="occurrences" name="occurrences">
-            </div>
-            <button type="submit" class="button" id="readingButton">Run Periodically</button>
-        </form>
-    </div>
-    {% if popup %}
-    <div class="messages">
-        {% for message in popup %}
-        <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
-    <h2 class="subheaders">Schedule a Reading</h2>
-    <div class="form-container">
-        <form action="{{ url_for('run_dated') }}" method="post" onsubmit="showLoading('scheduleButton')">
-            <div>
-                <label for="time"  class="label">Run at specific time (HH:MM:SS):</label>
-                <input type="text" class="textbox" pattern="^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$" id="time" name="time">
-                <button type="submit" class="button" id="scheduleButton">Schedule</button>
-            </div>
-        </form>
-    </div>
-    <div class="form-container">
-        <form action="{{ url_for('return_dated') }}" method="post" onsubmit="showLoading('datedButton')">
-            <div>
-                <label for="date"  class="label">Date (YYYY-MM-DD):</label>
-                <input type="text"  pattern="^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$" class="textbox" id="date" name="date">
-                <button type="submit" class="button" id="datedButton">Return readings</button>
-            </div>
-        </form>
-    </div>
-    <div class="form-container">
-        <form action="{{ url_for('to_graph_index') }}" method="get" onsubmit="showLoading('graphButton')">
-            <div>
-                <button type="submit" class="button" id="graphButton">Graph</button>
-            </div>
-        </form>
-    </div>
-    <br> 
+  </div>
+
+</main>
+
+<script>
+  // ── TOAST ──
+  function toast(msg, type = 'info') {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<div class="toast-dot"></div><span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(() => {
+      t.classList.add('removing');
+      t.addEventListener('animationend', () => t.remove());
+    }, 3400);
+  }
+
+  // ── GENERIC FORM SUBMIT ──
+  function handleSubmit(form, message) {
+    const btn = form.querySelector('button[type=submit]');
+    btn.classList.add('loading');
+    btn.disabled = true;
+    const dot = document.getElementById('status-dot');
+    const st  = document.getElementById('status-text');
+    dot.classList.add('active');
+    st.textContent = 'Running';
+    toast(message, 'info');
+  }
+
+  // ── PERIODIC WITH FAKE PROGRESS ──
+  function handlePeriodic(form) {
+    const freq = parseFloat(form.querySelector('[name=frequency]').value);
+    const occ  = parseInt(form.querySelector('[name=occurrences]').value);
+    if (!freq || !occ) return;
+
+    const btn  = form.querySelector('button[type=submit]');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    const wrap  = document.getElementById('progress-wrap');
+    const fill  = document.getElementById('prog-fill');
+    const text  = document.getElementById('prog-text');
+    const count = document.getElementById('prog-count');
+    const dot   = document.getElementById('status-dot');
+    const st    = document.getElementById('status-text');
+
+    wrap.style.display = 'block';
+    dot.classList.add('active');
+    st.textContent = 'Running';
+    toast(`Starting ${occ} periodic reading(s)…`, 'info');
+
+    let done = 0;
+    const interval = freq * 60 * 1000;
+
+    function tick() {
+      done++;
+      const pct = Math.round((done / occ) * 100);
+      fill.style.width = pct + '%';
+      text.textContent  = `Reading ${done} of ${occ} complete`;
+      count.textContent = `${done} / ${occ}`;
+      toast(`Reading ${done}/${occ} done`, 'success');
+      if (done >= occ) {
+        st.textContent = 'Idle';
+        dot.classList.remove('active');
+        toast('All readings complete!', 'success');
+        clearInterval(timer);
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    }
+
+    const timer = setInterval(tick, interval);
+    // Also let the form actually submit
+    form.submit();
+  }
+
+  // ── FLASH MESSAGES PASSED VIA URL ──
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('messages')) toast(decodeURIComponent(params.get('messages')), 'success');
+</script>
+
 </body>
 </html>
